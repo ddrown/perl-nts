@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+# https://tools.ietf.org/html/draft-ietf-ntp-using-nts-for-ntp-19
+
+use strict;
+use FindBin;
+use lib "$FindBin::Bin/blib/lib";
+use NTP::NTSKE;
+use NTP::NTSKE::TLS;
+use Getopt::Long;
+
+my(%args,$debug);
+GetOptions (
+    "host=s"     => \$args{hostname},
+    "port=i"     => \$args{port},
+    "certfile=s" => \$args{certfile},
+    "mintls=s"   => \$args{mintls},
+    "debug"      => \$debug
+    )
+or die("Error in command line arguments\n");
+
+foreach my $key (keys %args) {
+  delete $args{$key} if not defined($args{$key});
+}
+
+my($nts_tls) = NTP::NTSKE::TLS->new(%args);
+my($nts) = NTP::NTSKE->new(tls => $nts_tls, debug => $debug);
+my $context = $nts->get_cookie();
+use Data::Dumper;
+#print STDERR Dumper($context);
