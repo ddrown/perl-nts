@@ -12,9 +12,9 @@ sub new {
   my(%args) = @_;
   my(%defaults) = (
     hostname => undef,
-    port => 1234,
+    port => 123,
     certfile => DEFAULT_CERTFILE,
-    mintls => "1.3"
+    mintls => "1.2"
       );
   my($self) = {
     %defaults,

@@ -7,5 +7,6 @@ WriteMakefile(
     PREREQ_PM => {
       "Net::SSLeay" => "1.88",
       "IO::Socket::INET" => 0
-    }
+    },
+    LIBS => "-laes_siv"
     );

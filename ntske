@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 # https://tools.ietf.org/html/draft-ietf-ntp-using-nts-for-ntp-19
+# https://tools.ietf.org/html/rfc7822
 
 use strict;
 use FindBin;
@@ -26,5 +27,11 @@ foreach my $key (keys %args) {
 my($nts_tls) = NTP::NTSKE::TLS->new(%args);
 my($nts) = NTP::NTSKE->new(tls => $nts_tls, debug => $debug);
 my $context = $nts->get_cookie();
-use Data::Dumper;
-#print STDERR Dumper($context);
+print "cookies:\n";
+foreach my $cookie (@{ $context->cookie() }) {
+  print unpack("H*", $cookie), "\n";
+}
+print "s2c:\n";
+print unpack("H*", $context->s2c()),"\n";
+print "c2s:\n";
+print unpack("H*", $context->c2s()),"\n";

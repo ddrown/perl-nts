@@ -44,6 +44,9 @@ sub get_cookie {
 
   # TODO: response spanning packets
   my(@records) = NTP::NTSKE::Records::parse($response);
+  if($self->{debug}) {
+    print STDERR NTP::NTSKE::Records::dump(\@records);
+  }
   foreach my $record (@records) {
     if($record->is_critical_without_name()) {
       die("critical record of type ".$record->type()." unknown");
@@ -63,7 +66,9 @@ sub get_cookie {
   if(not defined($context->protocol())) {
     die("next protocol not set in server response");
   }
-  my($c2s,$s2c) = $self->{tls}->get_keying_material(16, $context->protocol(), $context->aead());
+
+  my $keylen = 16; # TODO - based on the aead
+  my($c2s,$s2c) = $self->{tls}->get_keying_material($keylen, $context->protocol(), $context->aead());
   $context->c2s($c2s);
   $context->s2c($s2c);
   return $context;

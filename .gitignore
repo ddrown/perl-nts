@@ -2,3 +2,6 @@ Makefile
 blib
 pm_to_blib
 .*.swp
+NTSKE.bs
+NTSKE.c
+NTSKE.o
