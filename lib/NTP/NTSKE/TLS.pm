@@ -2,6 +2,7 @@ package NTP::NTSKE::TLS;
 
 use strict;
 use constant DEFAULT_CERTFILE => "/etc/pki/tls/certs/ca-bundle.crt";
+use NTP::NTSKE::Constants qw(NEXTPROTO_NTP);
 use Net::SSLeay 1.88 qw(die_now); # 1.88 adds export_keying_material
 use IO::Socket::INET;
 
@@ -96,10 +97,15 @@ sub _connect_and_verify {
   if($status <= 0) {
     my $err = Net::SSLeay::ERR_get_error();
     while($err > 0) {
-      print "TLS error [$err] = ".Net::SSLeay::ERR_error_string($err)."\n";
+      if($self->{debug}) {
+        print "TLS error [$err] = ".Net::SSLeay::ERR_error_string($err)."\n";
+      }
       $err = Net::SSLeay::ERR_get_error();
     }
     die_now("ssl connect($!) = $status");
+  }
+  if($self->{debug}) {
+    print "connected with ".Net::SSLeay::get_version($self->{ssl})." / ".Net::SSLeay::get_cipher($self->{ssl})."\n";
   }
 
   # check cert & hostname result
@@ -112,7 +118,7 @@ sub _connect_and_verify {
 sub get_keying_material {
   my($self,$length,$next_proto,$aead_algo) = @_;
 
-  die("unexpected next proto $next_proto") if($next_proto != 0);
+  die("unexpected next proto $next_proto") if($next_proto != NEXTPROTO_NTP);
 
   my $c2s = Net::SSLeay::export_keying_material($self->{ssl}, $length, "EXPORTER-network-time-security/1", pack("n2C", $next_proto, $aead_algo, 0)) or die_now("export($!)");
   my $s2c = Net::SSLeay::export_keying_material($self->{ssl}, $length, "EXPORTER-network-time-security/1", pack("n2C", $next_proto, $aead_algo, 1)) or die_now("export($!)");

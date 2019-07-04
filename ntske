@@ -23,6 +23,9 @@ or die("Error in command line arguments\n");
 foreach my $key (keys %args) {
   delete $args{$key} if not defined($args{$key});
 }
+if($debug) {
+  $args{debug} = 1;
+}
 
 my($nts_tls) = NTP::NTSKE::TLS->new(%args);
 my($nts) = NTP::NTSKE->new(tls => $nts_tls, debug => $debug);
