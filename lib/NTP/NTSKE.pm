@@ -24,7 +24,7 @@ sub clientmsg {
   return NTP::NTSKE::Records::to_packet(\@records);
 }
 
-sub get_cookie {
+sub get_context {
   my($self) = @_;
 
   $self->{tls}->connect();

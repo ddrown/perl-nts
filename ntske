@@ -10,15 +10,20 @@ use NTP::NTSKE;
 use NTP::NTSKE::TLS;
 use Getopt::Long;
 
-my(%args,$debug);
+my(%args,$debug,$contextfile);
 GetOptions (
     "host=s"     => \$args{hostname},
     "port=i"     => \$args{port},
     "certfile=s" => \$args{certfile},
     "mintls=s"   => \$args{mintls},
-    "debug"      => \$debug
+    "debug"      => \$debug,
+    "context=s"  => \$contextfile
     )
 or die("Error in command line arguments\n");
+
+if(not defined($contextfile)) {
+  die("need context file\n");
+}
 
 foreach my $key (keys %args) {
   delete $args{$key} if not defined($args{$key});
@@ -29,12 +34,6 @@ if($debug) {
 
 my($nts_tls) = NTP::NTSKE::TLS->new(%args);
 my($nts) = NTP::NTSKE->new(tls => $nts_tls, debug => $debug);
-my $context = $nts->get_cookie();
-print "cookies:\n";
-foreach my $cookie (@{ $context->cookie() }) {
-  print unpack("H*", $cookie), "\n";
-}
-print "s2c:\n";
-print unpack("H*", $context->s2c()),"\n";
-print "c2s:\n";
-print unpack("H*", $context->c2s()),"\n";
+my $context = $nts->get_context();
+$context->save($contextfile);
+print "saved to $contextfile\n";

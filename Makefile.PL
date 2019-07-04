@@ -6,7 +6,8 @@ WriteMakefile(
     VERSION_FROM => "lib/NTP/NTSKE.pm",
     PREREQ_PM => {
       "Net::SSLeay" => "1.88",
-      "IO::Socket::INET" => 0
+      "IO::Socket::INET" => 0,
+      "Socket::MsgHdr" => 0
     },
     LIBS => "-laes_siv"
     );
