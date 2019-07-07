@@ -51,12 +51,29 @@ sub _tls_minver {
   die("unknown default minimum tls ".$self->{mintls});
 }
 
+sub _tls_min_method {
+  my($self) = @_;
+
+  if($self->{mintls} eq "1.3") {
+    die("openssl version does not support TLS 1.3");
+  } elsif($self->{mintls} eq "1.2" or not defined($self->{mintls})) {
+    return Net::SSLeay::TLSv1_2_method();
+  } elsif($self->{mintls} eq "1.1") {
+    return Net::SSLeay::TLSv1_1_method();
+  }
+  die("unknown default minimum tls ".$self->{mintls});
+}
+
 sub _new_tls {
   my($self) = @_;
 
-  # create an encryption context and restrict it to $self->{mintls}
-  $self->{ctx} = Net::SSLeay::CTX_new_with_method(Net::SSLeay::TLS_method());
-  Net::SSLeay::CTX_set_min_proto_version($self->{ctx}, $self->_tls_minver());
+  if(exists &Net::SSLeay::TLS_method) { # openssl 1.1+
+    # create an encryption context and restrict it to $self->{mintls}
+    $self->{ctx} = Net::SSLeay::CTX_new_with_method(Net::SSLeay::TLS_method());
+    Net::SSLeay::CTX_set_min_proto_version($self->{ctx}, $self->_tls_minver());
+  } else {
+    $self->{ctx} = Net::SSLeay::CTX_new_with_method($self->_tls_min_method());
+  }
 
   # disable compression
   Net::SSLeay::CTX_set_options($self->{ctx}, $Net::SSLeay::OP_NO_COMPRESSION);
