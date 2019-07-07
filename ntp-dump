@@ -85,6 +85,7 @@ do {
       printf("Poll=%d precision=%d\n",$response->poll(),$response->precision());
       printf("Root Delay: %s\n",$response->root_delay());
       printf("Root Dispersion %s\n",$response->root_dispersion());
+      printf("Response Size %d\n",$response->packetsize());
       if($response->saw_auth) {
         print "packet protected by NTS\n";
       }

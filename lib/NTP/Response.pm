@@ -265,4 +265,9 @@ sub originate_time {
   return NTP::Timestamp::from_ntp($self->{"org_time"}, $self->{"org_time_fb"})->to_string();
 }
 
+sub packetsize {
+  my($self) = @_;
+  return length($self->{pkt});
+}
+
 1;
