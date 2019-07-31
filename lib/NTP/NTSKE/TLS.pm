@@ -123,6 +123,7 @@ sub _connect_and_verify {
   }
   if($self->{debug}) {
     print "connected with ".Net::SSLeay::get_version($self->{ssl})." / ".Net::SSLeay::get_cipher($self->{ssl})."\n";
+    print "alpn = ".unpack("H*",Net::SSLeay::P_alpn_selected($self->{ssl}))."\n";
   }
 
   # check cert & hostname result
