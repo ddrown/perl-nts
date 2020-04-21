@@ -10,14 +10,15 @@ use NTP::NTSKE;
 use NTP::NTSKE::TLS;
 use Getopt::Long;
 
-my(%args,$debug,$contextfile);
+my(%args,$debug,$contextfile,$draftexport);
 GetOptions (
     "host=s"     => \$args{hostname},
     "port=i"     => \$args{port},
     "certfile=s" => \$args{certfile},
     "mintls=s"   => \$args{mintls},
     "debug"      => \$debug,
-    "context=s"  => \$contextfile
+    "context=s"  => \$contextfile,
+    "draft-export" => \$draftexport
     )
 or die("Error in command line arguments\n");
 
@@ -30,6 +31,9 @@ foreach my $key (keys %args) {
 }
 if($debug) {
   $args{debug} = 1;
+}
+if($draftexport) {
+  $args{exportConst} = "EXPORTER-network-time-security/1";
 }
 
 my($nts_tls) = NTP::NTSKE::TLS->new(%args);

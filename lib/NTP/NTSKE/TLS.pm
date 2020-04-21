@@ -13,9 +13,10 @@ sub new {
   my(%args) = @_;
   my(%defaults) = (
     hostname => undef,
-    port => 123,
+    port => 4460,
     certfile => DEFAULT_CERTFILE,
-    mintls => "1.2"
+    mintls => "1.2",
+    exportConst => "EXPORTER-network-time-security"
       );
   my($self) = {
     %defaults,
@@ -138,8 +139,8 @@ sub get_keying_material {
 
   die("unexpected next proto $next_proto") if($next_proto != NEXTPROTO_NTP);
 
-  my $c2s = Net::SSLeay::export_keying_material($self->{ssl}, $length, "EXPORTER-network-time-security/1", pack("n2C", $next_proto, $aead_algo, 0)) or die_now("export($!)");
-  my $s2c = Net::SSLeay::export_keying_material($self->{ssl}, $length, "EXPORTER-network-time-security/1", pack("n2C", $next_proto, $aead_algo, 1)) or die_now("export($!)");
+  my $c2s = Net::SSLeay::export_keying_material($self->{ssl}, $length, $self->{exportConst}, pack("n2C", $next_proto, $aead_algo, 0)) or die_now("export($!)");
+  my $s2c = Net::SSLeay::export_keying_material($self->{ssl}, $length, $self->{exportConst}, pack("n2C", $next_proto, $aead_algo, 1)) or die_now("export($!)");
 
   return($c2s,$s2c);
 }
